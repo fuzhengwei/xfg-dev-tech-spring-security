@@ -58,9 +58,9 @@ public class SpringSecurityConfig {
                                            AppUnauthorizedHandler appUnauthorizedHandler,
                                            AppAccessDeniedHandler appAccessDeniedHandler
     ) throws Exception {
-        // 使用JWT，不需要csrf防护
+        // 使用JWT，可屏蔽csrf防护
         httpSecurity.csrf(CsrfConfigurer::disable)
-                // 基于token，不需要session
+                // 基于token存储到浏览器，不需要session
                 .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizationRegistry -> authorizationRegistry
                         // 允许对于网站静态资源的无授权访问
@@ -68,7 +68,6 @@ public class SpringSecurityConfig {
                         // 对登录注册允许匿名访问
                         .requestMatchers(requestMatchers).permitAll()
                         // 访问授权，所有 /user/** 路径下的请求需要 ADMIN 角色。注意；Spring Security在处理角色时，会自动为角色名添加"ROLE_"前缀。因此，"ADMIN"角色实际上对应权限"ROLE_ADMIN"。
-//                        .requestMatchers("/api/mall/**").hasRole(RoleTypeEnum.ADMIN.getCode())
                         .requestMatchers("/api/mall/**").permitAll()
                         // 跨域请求会先进行一次options请求
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
@@ -81,12 +80,12 @@ public class SpringSecurityConfig {
                 .headers(headersConfigurer -> headersConfigurer
                         .cacheControl(HeadersConfigurer.CacheControlConfig::disable)
                 )
-                // 使用自定义provider
+                // 使用自定义 provider
                 .authenticationProvider(jwtAuthenticationProvider)
-                // 添加JWT filter
+                // 添加 JWT filter
                 .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 // 添加自定义未授权和未登录结果返回
-                .exceptionHandling(exceptionConfigurer -> exceptionConfigurer
+                .exceptionHandling(exceptionConfigure -> exceptionConfigure
                         .accessDeniedHandler(appAccessDeniedHandler)
                         .authenticationEntryPoint(appUnauthorizedHandler));
 

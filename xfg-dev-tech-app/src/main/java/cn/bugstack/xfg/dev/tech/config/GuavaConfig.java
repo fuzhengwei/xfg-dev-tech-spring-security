@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-//@Configuration
+@Configuration
 public class GuavaConfig {
 
     @Bean(name = "userCache")
