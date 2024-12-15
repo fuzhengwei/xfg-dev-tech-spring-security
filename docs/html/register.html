@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册界面</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #74ABE2, #5563DE);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .register-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            width: 320px;
+            text-align: center;
+        }
+        .register-container h2 {
+            margin-bottom: 30px;
+            font-weight: 500;
+            color: #333;
+        }
+        .register-container input[type="text"],
+        .register-container input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .register-container input[type="text"]:focus,
+        .register-container input[type="password"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .register-container button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #5563DE;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .register-container button:hover {
+            background-color: #3a49c9;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+<div class="register-container">
+    <h2>注册</h2>
+    <input type="text" id="username" placeholder="用户名" required>
+    <input type="password" id="password" placeholder="密码" required>
+    <button onclick="register()">注册</button>
+</div>
+
+<script>
+        function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            fetch('http://127.0.0.1:8091/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded', // or 'application/json' depending on your API
+                },
+                body: new URLSearchParams({
+                    userName: username,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === '0000') {
+                    alert('注册成功!');
+                } else {
+                    alert('注册失败: ' + (data.info || '请重试'));
+                }
+            })
+            .catch(error => {
+                console.error('错误:', error);
+                alert('注册过程中发生错误!');
+            });
+        }
+    </script>
+
+</body>
+</html>

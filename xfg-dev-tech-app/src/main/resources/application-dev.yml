@@ -1,0 +1,13 @@
+server:
+  port: 8091
+
+spring:
+  security:
+    user:
+      name: xiaofuge
+      password: 123456
+
+logging:
+  level:
+    root: info
+  config: classpath:logback-spring.xml

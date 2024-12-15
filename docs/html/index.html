@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品下单支付页</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f7f7f7;
+        text-align: center;
+    }
+    .container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .product-info {
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+        position: relative;
+    }
+    .user-name-display {
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        padding: 5px 10px;
+        border-radius: 4px;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+    }
+    .product-info h2 {
+        margin: 0;
+        margin-bottom: 5px;
+    }
+    .product-info p {
+        font-size: 36px;
+        font-weight: bold;
+        color: red;
+        margin: 0;
+        margin-top: 20px;
+    }
+    .order-button {
+        display: block;
+        width: calc(100% - 40px);
+        padding: 10px;
+        margin: 10px auto;
+        font-size: 16px;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        cursor: pointer;
+        border-radius: 20px;
+    }
+    .order-button:hover {
+        background-color: #0056b3;
+    }
+    .account-info {
+        font-size: 12px;
+        text-align: center;
+        display: block;
+        margin: 10px 0;
+    }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="product-info">
+        <span id="userNameDisplay" class="user-name-display">未登录</span>
+        <h2>美女程序员 - 同款机械键盘</h2>
+        <img width="350" src="images/sku-keyboard-001.png"/>
+        <p>价格：¥1.68</p>
+    </div>
+    <button id="orderButton" class="order-button">立即下单</button>
+    <span class="account-info">测试账号：xiaofuge 密码：123456 权限：admin(可下单) - 也可自行点击注册账号</span>
+    <span class="account-info">测试账号：liergou 密码：123456 权限：user - 也可自行点击注册账号</span>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+        var token = localStorage.getItem('xfg-dev-tech-spring-security-token');
+        if (!token) {
+            window.location.href = "login.html"; // Redirect to the login page
+            return;
+        }
+
+        var productId = "100010090091";
+        var url = 'http://127.0.0.1:8091/api/auth/query_user_name';
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // Include the token in the request headers
+            }
+        })
+        .then(response => response.json()) // Parse the JSON response
+        .then(json => {
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            if (json.code === "0000") {
+                userNameDisplay.textContent = json.data;
+            } else {
+                userNameDisplay.textContent = '未登录';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user name:', error);
+            document.getElementById('userNameDisplay').textContent = '未登录';
+        });
+
+    });
+
+document.getElementById('orderButton').addEventListener('click', function() {
+    var token = localStorage.getItem('xfg-dev-tech-spring-security-token');
+    if (!token) {
+        window.location.href = "login.html"; // Redirect to the login page
+        return;
+    }
+
+    var productId = "100010090091";
+    var url = 'http://127.0.0.1:8091/api/mall/create_pay_order';
+
+    var requestBody = {
+        productId: productId
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` // Include the token in the request headers
+        },
+        body: JSON.stringify(requestBody) // Convert the request body to a JSON string
+    })
+    .then(response => response.json()) // Parse the JSON response
+    .then(json => {
+        if (json.code === "0000") { // Assume success code is "0000"
+            alert(json.data);
+        } else {
+            alert("code："+json.code +" "+json.info)
+            console.error('Error:', json.info); // Output error information
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+</script>
+</body>
+</html>
